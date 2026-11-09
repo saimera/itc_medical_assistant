@@ -1,0 +1,48 @@
+Aakhir mein kya mila
+- itc-profile.html — website se mila original HTML
+- itc-profile.txt — cleaned page ka readable text; 27,347 characters
+- itc-profile-sections.json — 12 profile section records
+- itc-faqs.json — 7 question-answer records
+- itc-reviews.json — 3 review records
+- itc-testimonials.json — 4 written patient stories
+
+Yeh 26 structured records hain.
+
+                    Challenge                                                                	Humne kya kiya
+
+Page ke shuru mein navigation aur booking popups ka text tha	Popup IDs aur common nav, header, footer elements extraction se pehle remove kiye
+
+Sirf saara HTML text nikalne se sections aur unki boundaries mix ho rahi thin	main.article-dt-desc aur HTML section containers identify karke profile content alag records mein nikala
+
+FAQs ek lambe profile record mein mix ho rahe the	7 sawal-jawab ko itc-faqs.json mein alag records banaya
+
+Review body, reviewer, date aur rating ek saath mil rahe the	Har .review-card se fields alag nikaal kar itc-reviews.json banayi
+
+Broad profile record mein FAQ, review aur testimonial content duplicate ho raha tha	Inhein sepa
+
+Testimonials mein 13 titles the, lekin sirf 4 ke saath written stories thin	Sirf 4 available written stories alag save ki; baqi 9 title-only hain
+
+Page “6 Reviews” batata hai, magar raw HTML mein 3 review cards mile	Sirf HTML mein available 3 reviews save kiye; yeh coverage limitation note ki
+
+HTML comments jaise CTA 1 text mein aa rahe the	Comment nodes extraction se pehle remove kiye
+
+
+Medical-content note: testimonials clinic ki website par publish ki gayi patient stories hain; unhein independently verified treatment outcomes ke taur par nahi dikhana chahiye. RAG records mein unka testimonial type aur source attribution preserve karna zaroori hoga.
+
+
+
+I built a web-scraping pipeline for a medical RAG project using uv, requests, and BeautifulSoup. It extracts clinic profile sections, FAQs, reviews, and written testimonials into structured JSON while keeping the source URL for attribution.
+
+What is HTML Parsing?
+Website ka raw HTML dekhne mein code jaisa hota hai. HTML parsing us code ko samajhne layak parts—jaise heading, paragraph aur review—mein todti hai, taa-ke hum sahi text nikaal saken aur menu ya popup ko chhor saken.
+
+HTML parse karna is tarah samjho:
+1. Website ka HTML ek raw file hota hai—usmein page ka text, menu, buttons aur doosra code mila hota hai.
+2. BeautifulSoup is HTML ko samajh kar elements mein organize karta hai, jaise headings (h2), paragraphs (p) aur review cards.
+3. Phir hum specific elements dhoondh sakte hain—jaise FAQ ka sawal ya review ka rating—and menu aur popups ko hata sakte hain.
+4. Is tarah humein useful content saaf, structured form mein milta hai jo RAG ke liye process karna aasaan hota hai.
+
+
+
+
+
