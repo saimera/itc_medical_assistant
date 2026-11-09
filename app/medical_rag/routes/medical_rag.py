@@ -2,11 +2,17 @@ from fastapi import FastAPI  # FastAPI application banane ke liy
 from pathlib import Path  # File path handle karne ke liye
 
 from fastapi.responses import FileResponse  # Static files serve karne ke liye
+from fastapi.staticfiles import StaticFiles
 
 from app.medical_rag.routes.chat_router import router as chat_router  # Chat router import karo
 
 
 app = FastAPI(title="Medical RAG API")  # API application create karo
+app.mount(
+    "/static",
+    StaticFiles(directory=Path(__file__).resolve().parents[3] / "static"),
+    name="static",
+)
 app.include_router(chat_router)  # Chat routes app ke saath register karo
 
 
