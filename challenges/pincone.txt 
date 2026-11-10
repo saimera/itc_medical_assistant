@@ -1,0 +1,7 @@
+Pinecone Setup:
+
+Installtion:
+uv add pinecone
+
+go to : https://app.pinecone.io -> SignIn ->> Project ->> Databes ->>> Indexes -> Create Index 
+

@@ -1,0 +1,30 @@
+itc-corpus.json
+       ↓
+markdown.py: 26 records ko Markdown mein format kiya
+       ↓
+data/processed/itc-profile.md
+       ↓
+load_documents.py: Markdown file read ki
+       ↓
+PostgreSQL documents table: webpage ka ek row save hua
+
+Step by step
+
+1. Corpus JSON read kiya
+   Is mein 26 structured records thay—profile sections, FAQs, reviews aur testimonials.
+2. Records ko Markdown mein convert kiya
+   Har record ko title aur type mila. Duplicate title text hataya aur records ke beech separator rakha. source_url Markdown content mein nahi dala.
+3. Markdown output inspect/save karne layak banaya
+   data/processed/itc-profile.md ab clean content ka intermediate format hai. Yeh local Python script se bana; LLM/Groq use nahi hua.
+4. Document loader ka input path badla
+   Loader ab purani itc-profile.txt ke bajaye itc-profile.md read karta hai. Title se ## bhi hata diya, taa-ke database title saaf rahe.
+5. Ek webpage ka row PostgreSQL mein save kiya
+   Loader ne placidway-itc-profile-5 ID ke saath webpage record save kiya. documents.content mein Markdown text aur source_url alag field mein hai.
+
+Challenges aur solutions
+- Raw text mein navigation/footer ka noise tha → Corpus JSON ke selected records se Markdown banaya.
+- Document content mein title do baar aa sakta tha → Markdown banate waqt shuru ka duplicate title hataya.
+- Markdown heading ## database title mein aa sakti thi → Loader mein title read karte waqt # strip kiya.
+- Har run par duplicate webpage row ka risk tha → Loader same source URL ke existing row ko replace karta hai; output mein ek saved webpage ID mili.
+- Source URL har record/chunk mein repeat ho sakta tha → URL document row mein rakha; content text mein duplicate nahi kiya.
+
