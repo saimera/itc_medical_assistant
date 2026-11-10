@@ -1,5 +1,4 @@
 const app = document.querySelector(".app");
-const footer = document.querySelector("footer");
 const welcome = document.querySelector("#welcome");
 const form = document.querySelector("#chat-form");
 const input = document.querySelector("#question");
@@ -21,7 +20,7 @@ form.addEventListener("submit", async (event) => {
   if (!question) return;
   if (!app.classList.contains("chat-started")) {
     app.classList.add("chat-started");
-    footer.before(form);
+    document.querySelector("footer").before(form);
     welcome.remove();
   }
 

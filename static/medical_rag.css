@@ -2,16 +2,18 @@
 
 body {
   margin: 0;
-  color: #243330;
-  background: #fbfcfb;
-  font: 16px Arial, sans-serif;
+  color: #1f2937;
+  background: #f0f9ff;
+  font: 16px Aptos, "Segoe UI", sans-serif;
 }
 
 .app {
+  height: 100vh;
   height: 100dvh;
-  padding: 28px 40px 18px;
+  padding: 18px 28px 22px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 header { display: flex; align-items: center; gap: 12px; }
@@ -23,34 +25,39 @@ header { display: flex; align-items: center; gap: 12px; }
   font-size: 23px;
 }
 
-h1 { margin: 0; font-size: 19px; }
-header p, footer { color: #788783; font-size: 13px; }
+h1 { margin-top: -5px; font-size: 17px; font-weight: 700; }
+header p, footer { color: #526273; font-size: 13px; }
 header p { margin: 5px 0 0; }
 
 #messages {
-  width: min(760px, 100%);
-  flex: 1; min-height: 0;
+  width: min(840px, 100%);
+  flex: 1;
+  min-height: 0;
   align-self: center;
-  display: flex; flex-direction: column;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   overflow-y: auto;
-  padding: 24px 0;
+  padding: 38px 0 24px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.app.chat-started #messages { justify-content: flex-start; }
+#messages::-webkit-scrollbar { display: none; }
 
 .welcome {
-  margin: 0;
-  color: #60736e;
+  width: 100%;
+  margin: auto;
+  color: #1f2937;
   text-align: center;
 }
 
-.welcome h2 { margin-top:-70px ; margin-bottom: 8px; font-size: 27px; }
+.welcome h2 { margin-top: -100px; font-size: 20px; font-weight: 400; }
 .welcome p { font-size: 15px; }
-.welcome form { margin-top: 25px; }
+.welcome form { margin-top: 24px; }
 
 .message {
-  max-width: 82%;
+  max-width: 100%;
   margin: 10px 0;
   padding: 13px 16px;
   border-radius: 16px;
@@ -61,51 +68,78 @@ header p { margin: 5px 0 0; }
 
 .user {
   align-self: flex-end;
-  color: #20312f;
-  background: #eaf3f0;
+  max-width: min(82%, 640px);
+  color: #f5f7fb;
+  background: #193b70;
+  border-radius: 24px;
 }
 
-.assistant { align-self: flex-start; }
+.assistant {
+  align-self: stretch;
+  padding: 13px 0;
+  color: #1f2937;
+}
 
 .sources { margin-top: 10px; font-size: 13px; }
 .sources a {
   display: block;
   margin-top: 5px;
-  color: #167568;
+  color: #086b67;
   overflow-wrap: anywhere;
 }
 
 form {
-  width: min(700px, 100%);
+  width: min(750px, 100%);
   align-self: center;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  margin-left: 35px;
+  border: 1px solid #cbd9df;
+  border-radius: 30px;
+  background: #ffffff;
 }
 
 input {
   flex: 1; min-width: 0;
-  padding: 15px;
-  border: 1px solid #dce5e2;
-  border-radius: 14px;
-  background: white;
+  padding: 12px 15px;
+  border: 0;
+  border-radius: 24px;
+  color: #1f2937;
+  background: transparent;
   font-size: 15px;
-  outline-color: #218779;
+  outline: none;
 }
 
+form:focus-within {
+  border-color: #218779;
+  box-shadow: 0 0 0 3px rgb(33 135 121 / 15%);
+}
+
+input::placeholder { color: #687985; }
+
 button {
-  width: 48px;
+  flex: 0 0 34px;
+  width: 25px; height: 32px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 50%;
   color: white;
-  background: #218779;
-  font-size: 22px;
+  background: #34a294;
+  font-size: 18px;
   cursor: pointer;
 }
 
 button:disabled { opacity: .6; cursor: wait; }
-footer { padding-top: 12px; text-align: center; }
+footer {
+  flex: 0 0 auto;
+  padding: 8px 0 10px;
+  text-align: center;
+}
 
 @media (max-width: 600px) {
-  .app { padding: 20px 16px 14px; }
+  .app { padding: 16px 16px 14px; }
+  #messages { padding-top: 24px; }
   .welcome h2 { font-size: 23px; }
+  .user { max-width: 90%; }
 }
