@@ -1,4 +1,0 @@
-- Markdown kyun banaya? Corpus JSON ke 26 records ko headings, types aur separators ke saath readable structure dene ke liye.
-- Kya faida hua? Chunker --- se records ki boundaries pehchan sakta hai aur FAQ, review, testimonial ko aapas mein mix nahi karega.
-- Challenge kya tha? Saara content ek document row mein rakhne par records ki boundaries chunking ke liye saaf nahi rehti thin.
-- Solution kya tha? JSON records ko Markdown format kiya aur Markdown ko documents.content mein save kiya.
