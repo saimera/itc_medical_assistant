@@ -1,4 +1,4 @@
-# Medical RAG App
+# Immunity Therapy Center - medical_assistant
 
 A Retrieval-Augmented Generation (RAG) chatbot that answers questions about a medical center's [PlacidWay](https://www.placidway.com) profile (ITC Immunity Therapy Center). Answers are grounded in the scraped source content and returned with source citations.
 
