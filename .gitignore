@@ -13,3 +13,7 @@ wheels/
 .env
 .env.*
 !.env.example
+
+# Local data and challenge files
+/data/
+/challenges/
