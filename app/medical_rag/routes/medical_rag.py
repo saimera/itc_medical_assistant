@@ -1,25 +1,27 @@
-from fastapi import FastAPI  # FastAPI application banane ke liy
-from pathlib import Path  # File path handle karne ke liye
+from pathlib import Path
 
-from fastapi.responses import FileResponse  # Static files serve karne ke liye
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.medical_rag.routes.chat_router import router as chat_router  # Chat router import karo
+from app.medical_rag.routes.chat_router import router as chat_router
 
 
-app = FastAPI(title="Medical RAG API")  # API application create karo
+app = FastAPI(title="Medical RAG API")
 app.mount(
     "/static",
     StaticFiles(directory=Path(__file__).resolve().parents[3] / "static"),
     name="static",
 )
-app.include_router(chat_router)  # Chat routes app ke saath register karo
+app.include_router(chat_router)
 
 
-@app.get("/",include_in_schema=False)  # Root route define karo
+# Serve the main UI page and a lightweight health check for deployment checks.
+@app.get("/", include_in_schema=False)
 def home():
     return FileResponse("templates/medical_rag.html")
 
-@app.get("/health")  # Health-check route define karo
-def health_check():  # Health-check request handle karo
-    return {"status": "ok"}  # App ka status return karo
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}

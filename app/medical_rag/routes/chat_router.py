@@ -1,23 +1,21 @@
-from fastapi import APIRouter  # Chat API route banane ke liye
-from pydantic import BaseModel  # Request body validate karne ke liye
+from fastapi import APIRouter
+from pydantic import BaseModel
 
-from services.llm import generate_answer  # Retrieved context se jawab banane ke liye
-from services.query_service import retrieve_chunks  # Relevant chunks dhoondhne ke liye
+from services.llm import generate_answer
+from services.query_service import retrieve_chunks
 
-router = APIRouter()  # Chat routes ka router banao
-
-
-class ChatRequest(BaseModel):  # Chat request ka format
-    question: str  # User ka sawal
+router = APIRouter()
 
 
-@router.post("/chat")  # POST /chat endpoint
-def chat(request: ChatRequest):  # User ka request handle karo
-    chunks = retrieve_chunks(request.question)  # Sawal ke relevant chunks retrieve karo
-    answer = generate_answer(request.question, chunks)  # Chunks se LLM jawab banaye
-    sources = list(dict.fromkeys(  # Duplicate URLs hatao aur order barqarar rakho
-        chunk["source_url"] for chunk in chunks  # Retrieved chunks ke source URLs lo
-    ))
-    return {"answer": answer, "sources": sources}  # Jawab aur sources frontend ko do
+class ChatRequest(BaseModel):
+    question: str
 
+
+# Use the retrieval results as grounding context for the LLM response.
+@router.post("/chat")
+def chat(request: ChatRequest):
+    chunks = retrieve_chunks(request.question)
+    answer = generate_answer(request.question, chunks)
+    sources = list(dict.fromkeys(chunk["source_url"] for chunk in chunks))
+    return {"answer": answer, "sources": sources}
     
