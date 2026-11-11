@@ -1,43 +1,46 @@
-import json  # JSON files read aur write karne ke liye
-from pathlib import Path  # File paths handle karne ke liye
+import json
+from pathlib import Path
 
 
-data_dir = Path("data/processed")  # Processed JSON files ka folder
+# Load the processed source files that will be merged into one corpus.
+data_dir = Path("data/processed")
 
-def load_records(filename):  # JSON file se records load karne ka function
-    path = data_dir / filename  # File ka path banao
-    return json.loads(path.read_text(encoding="utf-8"))  # File ka JSON Python data mein badlo
 
-documents = []  # Normalized records rakhne ki list
+def load_records(filename):
+    path = data_dir / filename
+    return json.loads(path.read_text(encoding="utf-8"))
 
-for index, record in enumerate(load_records("itc-profile-sections.json"), start=1):  # Profile sections par jao
-    documents.append({  # Common-format document banao
-        "id": f"profile-{index:03d}",  # Unique record ID do
-        "record_type": "profile_section",  # Record ka type set karo
-        "title": record["section"],  # Section heading title banao
-        "text": record["text"],  # Section content rakho
-        "source_url": record["source_url"],  # Source URL rakho
-        "metadata": {"section_id": record["section_id"]},  # Section ID metadata mein rakho
+
+documents = []
+
+for index, record in enumerate(load_records("itc-profile-sections.json"), start=1):
+    documents.append({
+        "id": f"profile-{index:03d}",
+        "record_type": "profile_section",
+        "title": record["section"],
+        "text": record["text"],
+        "source_url": record["source_url"],
+        "metadata": {"section_id": record["section_id"]},
     })
 
-for index, record in enumerate(load_records("itc-faqs.json"), start=1):  # FAQs par jao
-    documents.append({  # Common-format FAQ document banao
-        "id": f"faq-{index:03d}",  # Unique record ID do
-        "record_type": "faq",  # Record ka type set karo
-        "title": record["question"],  # Sawal ko title banao
-        "text": f"Question: {record['question']}\nAnswer: {record['answer']}",  # Sawal aur jawab jodo
-        "source_url": record["source_url"],  # Source URL rakho
-        "metadata": {"section_id": record["section_id"]},  # Section ID metadata mein rakho
+for index, record in enumerate(load_records("itc-faqs.json"), start=1):
+    documents.append({
+        "id": f"faq-{index:03d}",
+        "record_type": "faq",
+        "title": record["question"],
+        "text": f"Question: {record['question']}\nAnswer: {record['answer']}",
+        "source_url": record["source_url"],
+        "metadata": {"section_id": record["section_id"]},
     })
 
-for index, record in enumerate(load_records("itc-reviews.json"), start=1):  # Reviews par jao
-    documents.append({  # Common-format review document banao
-        "id": f"review-{index:03d}",  # Unique record ID do
-        "record_type": "review",  # Record ka type set karo
-        "title": f"Review by {record['reviewer'] or 'Guest'}",  # Reviewer se title banao
-        "text": record["text"],  # Review content rakho
-        "source_url": record["source_url"],  # Source URL rakho
-        "metadata": {  # Review details metadata mein rakho
+for index, record in enumerate(load_records("itc-reviews.json"), start=1):
+    documents.append({
+        "id": f"review-{index:03d}",
+        "record_type": "review",
+        "title": f"Review by {record['reviewer'] or 'Guest'}",
+        "text": record["text"],
+        "source_url": record["source_url"],
+        "metadata": {
             "reviewer": record["reviewer"],
             "date": record["date"],
             "rating": record["rating"],
@@ -45,18 +48,18 @@ for index, record in enumerate(load_records("itc-reviews.json"), start=1):  # Re
         },
     })
 
-for index, record in enumerate(load_records("itc-testimonials.json"), start=1):  # Written testimonials par jao
-    documents.append({  # Common-format testimonial document banao
-        "id": f"testimonial-{index:03d}",  # Unique record ID do
-        "record_type": "testimonial",  # Record ka type set karo
-        "title": record["title"],  # Story title rakho
-        "text": record["text"],  # Story content rakho
-        "source_url": record["source_url"],  # Source URL rakho
-        "metadata": {"section_id": record["section_id"]},  # Section ID metadata mein rakho
+for index, record in enumerate(load_records("itc-testimonials.json"), start=1):
+    documents.append({
+        "id": f"testimonial-{index:03d}",
+        "record_type": "testimonial",
+        "title": record["title"],
+        "text": record["text"],
+        "source_url": record["source_url"],
+        "metadata": {"section_id": record["section_id"]},
     })
 
-output_path = data_dir / "itc-corpus.json"  # Combined corpus file ka path
-output_path.write_text(json.dumps(documents, ensure_ascii=False, indent=2), encoding="utf-8")  # Corpus JSON save karo
-print(f"Saved {len(documents)} records to {output_path}")  # Saved records ki tadaad dikhao
-
+# Write the merged corpus so downstream ingestion can work from one file.
+output_path = data_dir / "itc-corpus.json"
+output_path.write_text(json.dumps(documents, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"Saved {len(documents)} records to {output_path}")
 
