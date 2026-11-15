@@ -5,9 +5,9 @@ from sqlalchemy import delete
 from app.medical_rag.db.models.documents import Document
 from app.medical_rag.db.session import SessionLocal
 
-SOURCE_URL = "https://www.placidway.com/profile/5/Alternative-Cancer-Treatment-by-ITC-Immunity-Therapy-Center"
-TEXT_PATH = Path("data/processed/itc-profile.md")
-DOCUMENT_ID = "placidway-itc-profile-5"
+SOURCE_URL = "https://www.placidway.com/package/7902/Alternative-Adrenal-Cancer-Treatment-Package-in-Tijuana-Mexico-by-ITC"
+TEXT_PATH = Path("data/processed/itc-package.md")
+DOCUMENT_ID = "placidway-itc-package"
 
 content = TEXT_PATH.read_text(encoding="utf-8").strip()
 title = next((line.lstrip("# ").strip() for line in content.splitlines() if line.strip()), "Untitled page")
@@ -22,7 +22,7 @@ with SessionLocal.begin() as session:
             title=title,
             content=content,
             source_url=SOURCE_URL,
-            metadata_json={"source_type": "medical_center_profile"},
+            metadata_json={"source_type": "medical_center_package"},
         )
     )
 

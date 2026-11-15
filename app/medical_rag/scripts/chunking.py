@@ -10,7 +10,7 @@ from app.medical_rag.db.session import SessionLocal
 TOKENIZER = Tokenizer.from_pretrained("nvidia/llama-nemotron-embed-1b-v2")
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
-DOCUMENT_ID = "placidway-itc-profile-5"
+DOCUMENT_ID = "placidway-itc-packag-7902"
 
 
 # Split markdown records into token-bounded chunks while keeping each chunk's
