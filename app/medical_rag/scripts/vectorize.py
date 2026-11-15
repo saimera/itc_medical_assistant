@@ -14,7 +14,7 @@ load_dotenv()
 
 INDEX_NAME = "medical-rag-chunks"
 NAMESPACE = "itc-profile"
-DOCUMENT_ID = "placidway-itc-profile-5"
+DOCUMENT_ID = "placidway-itc-package-7902"
 
 api_key = os.getenv("PINECONE_API_KEY")
 if not api_key:
