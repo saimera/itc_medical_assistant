@@ -1,91 +1,32 @@
-import re
+from datetime import datetime
+from enum import StrEnum
+from typing import Any
 
-from sqlalchemy import delete, select
-from tokenizers import Tokenizer
+from sqlalchemy import DateTime, String, Text, func
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import Mapped, mapped_column
 
-from app.medical_rag.db.models.chunks import Chunk
-from app.medical_rag.db.models.documents import Document
-from app.medical_rag.db.session import SessionLocal
-
-TOKENIZER = Tokenizer.from_pretrained("nvidia/llama-nemotron-embed-1b-v2")
-CHUNK_SIZE = 300
-CHUNK_OVERLAP = 50
+from app.medical_rag.db.base import Base
 
 
-def split_markdown(markdown: str) -> list[str]:
-    records = re.split(r"(?m)^---\s*$", markdown)
-    chunks = []
+class Document(Base):
 
-    for record in records:
-        record = record.strip()
-        if not record:
-            continue
+    __tablename__ = "documents"
 
-        parts = record.split("\n\n", 2)
-        tokens = TOKENIZER.encode(record, add_special_tokens=False).ids
+    class Status(StrEnum):
+        # PENDING_CONTENT = "pending_content"
+        PENDING_MARKDOWN = "pending_markdown"
+        TO_BE_CHUNKED = "to_be_chunked"
+        TO_BE_VECT = "to_be_vectorize"
+        INGESTED = "ingested"
+        # NO_TEXT = "no_text_found"
 
-        if len(tokens) <= CHUNK_SIZE or len(parts) < 3:
-            chunks.append(record)
-            continue
+    id: Mapped[str] = mapped_column(String(100), primary_key=True)
+    record_type: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column("metadata", JSONB, nullable=False, default=dict)
+    status: Mapped[Status | None] = mapped_column(String(30), nullable=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
-        context = "\n\n".join(parts[:2])
-        body = parts[2].strip()
-        prefix = f"{context}\n\n"
-        prefix_tokens = len(
-            TOKENIZER.encode(prefix, add_special_tokens=False).ids
-        )
-        body_size = CHUNK_SIZE - prefix_tokens - 5
-        step = body_size - CHUNK_OVERLAP
-
-        if step <= 0:
-            raise ValueError(f"Title/type too long for chunk size: {context}")
-
-        body_tokens = TOKENIZER.encode(body, add_special_tokens=False).ids
-
-        for start in range(0, len(body_tokens), step):
-            piece_tokens = body_tokens[start : start + body_size]
-            piece = TOKENIZER.decode(piece_tokens).strip()
-            chunks.append(f"{prefix}{piece}".strip())
-
-    return chunks
-
-
-with SessionLocal.begin() as session:
-    documents = session.scalars(
-        select(Document).where(
-            Document.status == Document.Status.TO_BE_CHUNKED,
-            Document.content.is_not(None),
-            Document.content != "",
-        )
-    ).all()
-
-    for document in documents:
-        markdown = document.content.strip()
-        if not markdown:
-            continue
-
-        chunk_texts = split_markdown(markdown)
-        if not chunk_texts:
-            continue
-
-        session.execute(
-            delete(Chunk).where(Chunk.document_id == document.id)
-        )
-
-        session.add_all(
-            Chunk(
-                document_id=document.id,
-                chunk_index=index,
-                content=text,
-                metadata_json={},
-            )
-            for index, text in enumerate(chunk_texts)
-        )
-
-        session.flush()
-        document.status = Document.Status.TO_BE_VECT
-
-        print(f"Saved {len(chunk_texts)} chunks for document: {document.id}")
-
-    if not documents:
-        print("No documents are waiting to be chunked.")
