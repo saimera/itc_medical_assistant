@@ -11,7 +11,7 @@ from app.medical_rag.db.session import SessionLocal
 
 load_dotenv()
 
-INDEX_NAME = "medical-rag-jina-v5"
+INDEX_NAME = "medical-rag-chunks"
 NAMESPACE = "itc-profile"
 BATCH_SIZE = 100
 
