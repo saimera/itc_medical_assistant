@@ -1,6 +1,6 @@
 import re
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from tokenizers import Tokenizer
 
 from app.medical_rag.db.models.chunks import Chunk
@@ -10,11 +10,8 @@ from app.medical_rag.db.session import SessionLocal
 TOKENIZER = Tokenizer.from_pretrained("nvidia/llama-nemotron-embed-1b-v2")
 CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
-DOCUMENT_ID = "placidway-itc-packag-7902"
 
 
-# Split markdown records into token-bounded chunks while keeping each chunk's
-# context and a small overlap between consecutive body segments.
 def split_markdown(markdown: str) -> list[str]:
     records = re.split(r"(?m)^---\s*$", markdown)
     chunks = []
@@ -34,7 +31,9 @@ def split_markdown(markdown: str) -> list[str]:
         context = "\n\n".join(parts[:2])
         body = parts[2].strip()
         prefix = f"{context}\n\n"
-        prefix_tokens = len(TOKENIZER.encode(prefix, add_special_tokens=False).ids)
+        prefix_tokens = len(
+            TOKENIZER.encode(prefix, add_special_tokens=False).ids
+        )
         body_size = CHUNK_SIZE - prefix_tokens - 5
         step = body_size - CHUNK_OVERLAP
 
@@ -51,25 +50,43 @@ def split_markdown(markdown: str) -> list[str]:
     return chunks
 
 
-# Rebuild the document's chunk cache in one transaction so stale rows are removed
-# before the regenerated content is inserted.
 with SessionLocal.begin() as session:
-    document = session.get(Document, DOCUMENT_ID)
-
-    if document is None:
-        raise ValueError(f"Document not found: {DOCUMENT_ID}")
-
-    chunk_texts = split_markdown(document.content)
-    session.execute(delete(Chunk).where(Chunk.document_id == document.id))
-
-    session.add_all(
-        Chunk(
-            document_id=document.id,
-            chunk_index=index,
-            content=text,
-            metadata_json={},
+    documents = session.scalars(
+        select(Document).where(
+            Document.status == Document.Status.TO_BE_CHUNKED,
+            Document.content.is_not(None),
+            Document.content != "",
         )
-        for index, text in enumerate(chunk_texts)
-    )
+    ).all()
 
-print(f"Saved {len(chunk_texts)} chunks for document: {DOCUMENT_ID}")
+    for document in documents:
+        markdown = document.content.strip()
+        if not markdown:
+            continue
+
+        chunk_texts = split_markdown(markdown)
+        if not chunk_texts:
+            continue
+
+        session.execute(
+            delete(Chunk).where(Chunk.document_id == document.id)
+        )
+
+        session.add_all(
+            Chunk(
+                document_id=document.id,
+                chunk_index=index,
+                content=text,
+                metadata_json={},
+                embedded=False,
+            )
+            for index, text in enumerate(chunk_texts)
+        )
+
+        session.flush()
+        document.status = Document.Status.TO_BE_VECT
+
+        print(f"Saved {len(chunk_texts)} chunks for document: {document.id}")
+
+    if not documents:
+        print("No documents are waiting to be chunked.")
