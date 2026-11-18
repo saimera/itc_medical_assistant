@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-input_path = Path("data/processed/itc-anal-package-corpus.json")
-output_path = Path("data/markdown/itc-anal-package.md")
+input_path = Path("data/processed/itc_price_list.json")
+output_path = Path("data/markdown/itc_price_list.md")
 
 records = json.loads(input_path.read_text(encoding="utf-8"))
 markdown_parts = []
