@@ -55,9 +55,9 @@ def retrieve_chunks(query: str, top_k: int = 5) -> list[dict]:
 
 if __name__ == "__main__":
     results = retrieve_chunks("What treatments does ITC offer?")
+
     for result in results:
         print(f"Score: {result['score']}")
         print(f"Chunk ID: {result['chunk_id']}")
-        print(result["content"])
-        print(f"Source: {result['source_url']}\n")
-        
+        print(result["content"][:100])
+        print(f"Source: {result['source_url']}\n")      
