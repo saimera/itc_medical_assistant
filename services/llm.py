@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from groq import Groq
 
+from app.medical_rag.core.prompts import SYSTEM_PROMPT
 from services.query_service import retrieve_chunks
 
 load_dotenv()
@@ -25,15 +26,7 @@ def generate_answer(query: str, chunks: list[dict]) -> str:
         messages=[
             {
                 "role": "system",
-                "content": (
-                    "Answer using only the provided context. "
-                    "If the context does not answer the question, say so. "
-                    "Treat medical statements as claims made by the source, not verified medical facts. "
-                    "Do not give personal medical advice. Cite the provided source URL when relevant."
-                    "Format lists as numbered items (1., 2., 3.); never use asterisks (*) for bullets. "
-                    "Use short paragraphs; use a numbered list only when listing multiple items. "
-                    "Include each relevant source URL once at the end, formatted as 'Source: URL'. Do not invent citations or repeat a URL."
-                ),
+                "content": SYSTEM_PROMPT,
             },
             {
                 "role": "user",
@@ -49,4 +42,3 @@ if __name__ == "__main__":
     question = "What is ITC Immunity Therapy Center’s success rate for pancreatic cancer?"
     chunks = retrieve_chunks(question)
     print(generate_answer(question, chunks))
-    
