@@ -16,8 +16,10 @@ function addMessage(text, role) {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+
   const question = input.value.trim();
   if (!question) return;
+
   if (!app.classList.contains("chat-started")) {
     app.classList.add("chat-started");
     document.querySelector("footer").before(form);
@@ -38,10 +40,11 @@ form.addEventListener("submit", async (event) => {
     });
 
     if (!response.ok) throw new Error();
+
     const data = await response.json();
 
     reply.textContent = (data.answer || "No answer returned.")
-      .replace(/\s*Source:\s*https?:\/\/\S+/gi, "")
+      .replace(/\s\*Source:\s\*https?:\/\/\S+/gi, "")
       .trim();
 
     if (data.sources?.length) {
@@ -49,10 +52,10 @@ form.addEventListener("submit", async (event) => {
       sourceBox.className = "sources";
       sourceBox.textContent = "Sources:";
 
-      data.sources.forEach((url) => {
+      data.sources.forEach((source) => {
         const link = document.createElement("a");
-        link.href = url;
-        link.textContent = url;
+        link.href = source.url;
+        link.textContent = source.title;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         sourceBox.appendChild(link);
@@ -61,7 +64,8 @@ form.addEventListener("submit", async (event) => {
       reply.appendChild(sourceBox);
     }
   } catch {
-    reply.textContent = "Could not get a response. Check that the backend is running.";
+    reply.textContent =
+      "Could not get a response. Check that the backend is running.";
   } finally {
     send.disabled = false;
     input.focus();

@@ -16,6 +16,13 @@ class ChatRequest(BaseModel):
 def chat(request: ChatRequest):
     chunks = retrieve_chunks(request.question)
     answer = generate_answer(request.question, chunks)
-    sources = list(dict.fromkeys(chunk["source_url"] for chunk in chunks))
-    return {"answer": answer, "sources": sources}
-    
+
+    sources_by_url = {}
+    for chunk in chunks:
+        url = chunk["source_url"]
+        sources_by_url[url] = {
+            "title": chunk["source_title"],
+            "url": url,
+        }
+
+    return {"answer": answer, "sources": list(sources_by_url.values())}

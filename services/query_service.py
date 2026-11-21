@@ -33,12 +33,12 @@ def retrieve_chunks(query: str, top_k: int = 5) -> list[dict]:
 
     with SessionLocal() as session:
         rows = session.execute(
-            select(Chunk, Document.source_url)
+            select(Chunk, Document.source_url,Document.title)
             .join(Document, Chunk.document_id == Document.id)
             .where(Chunk.id.in_(chunk_ids))
         ).all()
 
-    chunks_by_id = {chunk.id: (chunk, source_url) for chunk, source_url in rows}
+    chunks_by_id = {chunk.id: (chunk, source_url, source_title) for chunk, source_url, source_title in rows}
 
     return [
         {
@@ -47,6 +47,7 @@ def retrieve_chunks(query: str, top_k: int = 5) -> list[dict]:
             "score": score,
             "metadata": chunks_by_id[chunk_id][0].metadata_json,
             "source_url": chunks_by_id[chunk_id][1],
+            "source_title": chunks_by_id[chunk_id][2],
         }
         for chunk_id, score in ranked_ids
         if chunk_id in chunks_by_id
