@@ -63,7 +63,8 @@ form.addEventListener("submit", async (event) => {
 
       reply.appendChild(sourceBox);
     }
-  } catch {
+  } catch(error) {
+    console.error("Error fetching response:", error);
     reply.textContent =
       "Could not get a response. Check that the backend is running.";
   } finally {
