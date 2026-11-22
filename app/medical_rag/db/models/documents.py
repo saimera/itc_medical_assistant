@@ -14,12 +14,11 @@ class Document(Base):
     __tablename__ = "documents"
 
     class Status(StrEnum):
-        # PENDING_CONTENT = "pending_content"
         PENDING_MARKDOWN = "pending_markdown"
         TO_BE_CHUNKED = "to_be_chunked"
         TO_BE_VECT = "to_be_vectorize"
         INGESTED = "ingested"
-        # NO_TEXT = "no_text_found"
+
 
     id: Mapped[str] = mapped_column(String(100), primary_key=True)
     record_type: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
