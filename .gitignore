@@ -15,5 +15,6 @@ wheels/
 !.env.example
 
 # Local data and challenge files
+/testdb/
 /data/
 /challenges/

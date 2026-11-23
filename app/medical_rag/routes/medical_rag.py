@@ -6,7 +6,6 @@ from fastapi.staticfiles import StaticFiles
 
 from app.medical_rag.routes.chat_router import router as chat_router
 
-
 app = FastAPI(title="Medical RAG API")
 app.mount(
     "/static",
